@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Grounded Warmth — Daily Trainer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --navy: #1F3A5F;
+    --navy-dark: #152841;
+    --navy-light: #2d5282;
+    --accent: #c9a961;
+    --bg: #F7F5F0;
+    --card: #FFFFFF;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --border: #e5e0d5;
+    --green: #2d7a3e;
+    --amber: #b8860b;
+    --red: #a02727;
+  }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+  }
+  header.top {
+    padding: 16px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.2px;
+  }
+  .brand small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .streak {
+    text-align: right;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .streak .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    display: block;
+    line-height: 1;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--card);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab.active {
+    background: var(--navy);
+    color: white;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
+  .card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+  .card p { font-size: 14px; color: var(--text); margin-bottom: 8px; }
+  .card p.muted { color: var(--muted); font-size: 13px; }
+
+  /* Phase badge */
+  .phase-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: 10px;
+    color: white;
+    margin-bottom: 16px;
+  }
+  .phase-row .label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.8px; }
+  .phase-row .value { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .phase-row .right { text-align: right; }
+  .phase-row .right .num { font-size: 22px; font-weight: 800; line-height: 1; }
+  .phase-row .right .label { margin-top: 4px; }
+
+  /* Shift selector */
+  .shifts {
+    display: grid;
+    gap: 8px;
+  }
+  .shift {
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+  }
+  .shift:hover { border-color: var(--navy-light); }
+  .shift.active {
+    border-color: var(--navy);
+    background: #f0f4fa;
+  }
+  .shift .num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .shift.active .num {
+    background: var(--navy);
+    color: white;
+  }
+  .shift .body { flex: 1; }
+  .shift .title { font-weight: 600; font-size: 14px; }
+  .shift .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Textarea */
+  textarea, input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+    resize: vertical;
+  }
+  textarea:focus, input:focus {
+    outline: none;
+    border-color: var(--navy);
+    background: white;
+  }
+
+  /* Rep counter */
+  .rep-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .rep-btn {
+    padding: 18px 10px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    transition: transform 0.08s, filter 0.15s;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .rep-btn:active { transform: scale(0.97); }
+  .rep-btn .count {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .rep-btn .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.9;
+  }
+  .rep-btn.caught { background: var(--green); }
+  .rep-btn.slipped { background: var(--amber); }
+  .rep-btn:hover { filter: brightness(1.08); }
+
+  /* Rep note */
+  .rep-note {
+    margin-top: 12px;
+    display: none;
+  }
+  .rep-note.show { display: block; }
+  .rep-note input {
+    margin-bottom: 8px;
+  }
+  .rep-note button {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--navy);
+    color: white;
+  }
+  .rep-note button.secondary {
+    background: transparent;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+
+  /* Recent reps */
+  .rep-list {
+    margin-top: 14px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  .rep-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .rep-item:last-child { border-bottom: none; }
+  .rep-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .rep-item.caught .dot { background: var(--green); }
+  .rep-item.slipped .dot { background: var(--amber); }
+  .rep-item .content { flex: 1; }
+  .rep-item .note { color: var(--text); }
+  .rep-item .meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  /* Review form */
+  .review-q { margin-bottom: 14px; }
+  .review-q label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* History */
+  .history-day {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-day:last-child { border-bottom: none; }
+  .history-date {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .history-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .history-stats .stat { display: flex; align-items: center; gap: 4px; }
+  .history-stats .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .history-stats .dot.caught { background: var(--green); }
+  .history-stats .dot.slipped { background: var(--amber); }
+  .history-target {
+    font-size: 13px;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  /* Reference */
+  .ref-block { margin-bottom: 20px; }
+  .ref-block h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+    text-transform: none;
+    letter-spacing: -0.1px;
+  }
+  .ref-block .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .ref-block .pair .l, .ref-block .pair .r {
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+  .ref-block .pair .l {
+    background: #fbf0ef;
+    color: #8a2424;
+    text-decoration: line-through;
+    text-decoration-color: rgba(138, 36, 36, 0.4);
+  }
+  .ref-block .pair .r {
+    background: #ecf4ec;
+    color: #2d5a2d;
+    font-weight: 500;
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 24px 12px;
+    font-style: italic;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 30px;
+    padding: 16px;
+    line-height: 1.6;
+  }
+
+  /* View switcher */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--navy-dark);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Export button */
+  .utility-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .utility-btn {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .utility-btn:hover { background: var(--bg); color: var(--text); }
+  .utility-btn.danger:hover { color: var(--red); border-color: var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      Grounded Warmth
+      <small>Daily Trainer · ACFC</small>
+    </div>
+    <div class="streak">
+      <span class="num" id="streakNum">0</span>
+      day streak
+    </div>
+  </header>
+
+  <div class="phase-row">
+    <div>
+      <div class="label">Current phase</div>
+      <div class="value" id="phaseName">Awareness</div>
+    </div>
+    <div class="right">
+      <div class="num" id="dayNum">1</div>
+      <div class="label">Day of 90</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="today">Today</button>
+    <button class="tab" data-view="history">History</button>
+    <button class="tab" data-view="reference">Reference</button>
+  </div>
+
+  <!-- ============ TODAY VIEW ============ -->
+  <div class="view active" id="view-today">
+
+    <!-- Morning: pick target -->
+    <div class="card" id="morningCard">
+      <h2>Morning · Set today's target</h2>
+      <p class="muted" style="margin-bottom: 14px;">Pick one shift as your focus for today. Not all five — one.</p>
+      <div class="shifts" id="shiftsList"></div>
+      <div style="margin-top: 14px;">
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px;">One situation today where it will matter:</label>
+        <input type="text" id="situationInput" placeholder="e.g., first 1:1 with Alex, staff meeting at 10..." />
+      </div>
+      <button class="btn-primary" id="lockTargetBtn" disabled>Lock in today's target</button>
+    </div>
+
+    <!-- In-situ: log reps -->
+    <div class="card" id="repsCard" style="display:none;">
+      <h2>In-situ · Log reps</h2>
+      <p class="muted"><strong id="targetLabel"></strong></p>
+      <p class="muted" id="situationLabel" style="font-size:12px; margin-bottom:12px;"></p>
+
+      <div class="rep-controls">
+        <button class="rep-btn caught" id="caughtBtn">
+          <span class="count" id="caughtCount">0</span>
+          <span class="label">✓ Caught it</span>
+        </button>
+        <button class="rep-btn slipped" id="slippedBtn">
+          <span class="count" id="slippedCount">0</span>
+          <span class="label">◯ Slipped</span>
+        </button>
+      </div>
+
+      <div class="rep-note" id="repNote">
+        <input type="text" id="repNoteInput" placeholder="Optional: what happened? (one line)" />
+        <button id="saveRepNoteBtn">Save</button>
+        <button class="secondary" id="skipRepNoteBtn">Skip</button>
+      </div>
+
+      <div class="rep-list" id="repList"></div>
+    </div>
+
+    <!-- Evening review -->
+    <div class="card" id="eveningCard" style="display:none;">
+      <h2>Evening · Review (3 min)</h2>
+      <div class="review-q">
+        <label>Which rep today — caught or slipped — taught you the most?</label>
+        <textarea id="reviewQ1" rows="2" placeholder="One or two sentences..."></textarea>
+      </div>
+      <div class="review-q">
+        <label>Was there a moment you wanted to assert something and softened it? What happened?</label>
+        <textarea id="reviewQ2" rows="2" placeholder="Optional — skip if nothing to note..."></textarea>
+      </div>
+      <div class="review-q">
+        <label>Tomorrow's target shift (1–5)?</label>
+        <input type="text" id="reviewQ3" placeholder="e.g., 3 — Evaluate, don't defer" />
+      </div>
+      <button class="btn-primary" id="saveReviewBtn">Complete day</button>
+    </div>
+
+    <!-- Open review button -->
+    <div class="card" id="openReviewCard" style="display:none;">
+      <h2>Ready for evening review?</h2>
+      <p class="muted">Three questions. Three minutes. This is where the reps become learning.</p>
+      <button class="btn-primary" id="openReviewBtn" style="margin-top:12px;">Start evening review</button>
+    </div>
+
+    <!-- Day complete -->
+    <div class="card" id="doneCard" style="display:none;">
+      <h2>Day complete ✓</h2>
+      <p class="muted">Come back tomorrow morning to set the next target.</p>
+    </div>
+
+  </div>
+
+  <!-- ============ HISTORY VIEW ============ -->
+  <div class="view" id="view-history">
+    <div class="card">
+      <h2>Your training log</h2>
+      <div id="historyList"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Utilities</h3>
+      <div class="utility-row">
+        <button class="utility-btn" id="exportBtn">Export data</button>
+        <button class="utility-btn danger" id="resetBtn">Reset all</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ REFERENCE VIEW ============ -->
+  <div class="view" id="view-reference">
+    <div class="card">
+      <h2>The five shifts</h2>
+
+      <div class="ref-block">
+        <h3>1. Stillness over animation</h3>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">Slow the smile. Slow the nod. Hold the silence. Before responding, let a full second pass.</p>
+      </div>
+
+      <div class="ref-block">
+        <h3>2. Gaze-hold when you speak</h3>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">Deferential people break eye contact when they assert. Keep eyes on the person until the sentence ends.</p>
+      </div>
+
+      <div class="ref-block">
+        <h3>3. Evaluate, don't defer</h3>
+        <div class="pair"><div class="l">Thanks so much for pointing that out!</div><div class="r">That's a sharp observation.</div></div>
+        <div class="pair"><div class="l">I really appreciate you taking the time...</div><div class="r">Good — let's build on that.</div></div>
+        <div class="pair"><div class="l">Wow, such a great idea!</div><div class="r">Yes. That works.</div></div>
+        <div class="pair"><div class="l">Thank you, this is so helpful!</div><div class="r">Useful. Here's where I'd push it...</div></div>
+      </div>
+
+      <div class="ref-block">
+        <h3>4. Cut the softeners</h3>
+        <div class="pair"><div class="l">I just wanted to...</div><div class="r">I want to...</div></div>
+        <div class="pair"><div class="l">Sorry to bother you...</div><div class="r">[skip it]</div></div>
+        <div class="pair"><div class="l">I was hoping maybe...</div><div class="r">Let's...</div></div>
+        <div class="pair"><div class="l">Does that make sense?</div><div class="r">[silence — let it land]</div></div>
+        <div class="pair"><div class="l">I'm not sure, but...</div><div class="r">My read is...</div></div>
+        <div class="pair"><div class="l">This might be a stupid question...</div><div class="r">One question:</div></div>
+      </div>
+
+      <div class="ref-block">
+        <h3>5. Offer before you thank</h3>
+        <p style="font-size:13px; color:var(--muted);">Lead with an observation, a question of substance, or something you noticed. Save gratitude for specific earned moments. Praise down and sideways freely; praise up sparingly.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>High-stakes moments</h2>
+      <div class="ref-block">
+        <h3>First introduction</h3>
+        <div class="pair">
+          <div class="l">"So happy to be here, really grateful for the opportunity..."</div>
+          <div class="r">"Good to meet you. I've been watching your work with [X]. Looking forward to what we build."</div>
+        </div>
+      </div>
+      <div class="ref-block">
+        <h3>Asked your view in a meeting</h3>
+        <div class="pair">
+          <div class="l">"I'm still new, but maybe I'd just add..."</div>
+          <div class="r">A beat. Then: "Here's what I'm seeing."</div>
+        </div>
+      </div>
+      <div class="ref-block">
+        <h3>Disagreeing with Alex</h3>
+        <div class="pair">
+          <div class="l">Swallow it, or wrap in qualifiers.</div>
+          <div class="r">"I see it differently. Here's why..." — warm tone, steady gaze.</div>
+        </div>
+      </div>
+      <div class="ref-block">
+        <h3>Receiving senior praise</h3>
+        <div class="pair">
+          <div class="l">"Oh, thank you so much, that means a lot!"</div>
+          <div class="r">"Thank you." Hold eye contact. Pivot to substance or let it sit.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="background: var(--navy); color: white; border:none;">
+      <h2 style="color: white;">The one-line reframe</h2>
+      <p style="font-size: 15px; margin-top: 8px; font-style: italic; opacity: 0.95;">
+        Humility about the person.<br>
+        Confidence about the craft.<br>
+        Warmth in the room.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Data stored locally in this browser. Bookmark this page on your phone for daily access.<br>
+    v1.0 · Built for the 90-day ACFC onboarding arc.
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// THE GROUNDED WARMTH APP
+// ============================================================
+
+const SHIFTS = [
+  { num: 1, title: "Stillness over animation", desc: "Slow the smile. Slow the nod. Hold silence." },
+  { num: 2, title: "Gaze-hold when you speak", desc: "Eyes on the person when you state a view." },
+  { num: 3, title: "Evaluate, don't defer", desc: "\"Sharp.\" \"Good.\" Not \"thanks so much!\"" },
+  { num: 4, title: "Cut the softeners", desc: "No \"just\", \"sorry\", \"maybe\", \"does that make sense?\"" },
+  { num: 5, title: "Offer before you thank", desc: "Lead with substance, not gratitude." }
+];
+
+// Storage
+const STORAGE_KEY = "groundedWarmth_v1";
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    return { ...defaultState(), ...JSON.parse(raw) };
+  } catch(e) { return defaultState(); }
+}
+
+function defaultState() {
+  return {
+    startDate: null,           // ISO string of first day
+    days: {},                  // dateKey -> { target, situation, caught:[], slipped:[], review, completed }
+    lastAccessDate: null
+  };
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) { console.error(e); }
+}
+
+let state = loadState();
+let pendingRep = null; // { type: 'caught'|'slipped' }
+
+// Date helpers
+function todayKey() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function dayNumber() {
+  if (!state.startDate) return 1;
+  const start = new Date(state.startDate);
+  const today = new Date(todayKey());
+  const diffMs = today - start;
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+}
+
+function phaseOf(day) {
+  if (day <= 21) return "Awareness";
+  if (day <= 60) return "Substitution";
+  if (day <= 90) return "Integration";
+  return "Mastery+";
+}
+
+function currentDay() {
+  const key = todayKey();
+  if (!state.days[key]) {
+    state.days[key] = { target: null, situation: "", caught: [], slipped: [], review: null, completed: false };
+  }
+  return state.days[key];
+}
+
+function computeStreak() {
+  const dates = Object.keys(state.days).filter(k => state.days[k].completed).sort().reverse();
+  if (dates.length === 0) return 0;
+  let streak = 0;
+  let cursor = new Date(todayKey());
+  // If today not completed, start from yesterday
+  if (!state.days[todayKey()] || !state.days[todayKey()].completed) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  while (true) {
+    const k = cursor.toISOString().slice(0, 10);
+    if (state.days[k] && state.days[k].completed) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function render() {
+  // Init start date if needed
+  if (!state.startDate) {
+    state.startDate = todayKey();
+    saveState();
+  }
+
+  // Header
+  const day = dayNumber();
+  document.getElementById("dayNum").textContent = day;
+  document.getElementById("phaseName").textContent = phaseOf(day);
+  document.getElementById("streakNum").textContent = computeStreak();
+
+  renderToday();
+  renderHistory();
+}
+
+function renderToday() {
+  const today = currentDay();
+  const morningCard = document.getElementById("morningCard");
+  const repsCard = document.getElementById("repsCard");
+  const eveningCard = document.getElementById("eveningCard");
+  const openReviewCard = document.getElementById("openReviewCard");
+  const doneCard = document.getElementById("doneCard");
+
+  // Hide all
+  [morningCard, repsCard, eveningCard, openReviewCard, doneCard].forEach(c => c.style.display = "none");
+
+  if (today.completed) {
+    doneCard.style.display = "block";
+    // Still show reps card (read-only-ish)
+    repsCard.style.display = "block";
+    renderRepsCard(today, true);
+    return;
+  }
+
+  if (!today.target) {
+    // Morning flow
+    morningCard.style.display = "block";
+    renderMorning();
+  } else if (!today.review || !document.getElementById("eveningCard").dataset.openedOnce) {
+    // Reps + option to open review
+    repsCard.style.display = "block";
+    renderRepsCard(today, false);
+    if (!today.review) {
+      openReviewCard.style.display = "block";
+    } else {
+      eveningCard.style.display = "block";
+    }
+  }
+}
+
+function renderMorning() {
+  const list = document.getElementById("shiftsList");
+  list.innerHTML = "";
+  SHIFTS.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "shift";
+    div.dataset.num = s.num;
+    div.innerHTML = `
+      <div class="num">${s.num}</div>
+      <div class="body">
+        <div class="title">${s.title}</div>
+        <div class="desc">${s.desc}</div>
+      </div>
+    `;
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".shift").forEach(el => el.classList.remove("active"));
+      div.classList.add("active");
+      updateLockButton();
+    });
+    list.appendChild(div);
+  });
+
+  document.getElementById("situationInput").addEventListener("input", updateLockButton);
+}
+
+function updateLockButton() {
+  const selected = document.querySelector(".shift.active");
+  const situation = document.getElementById("situationInput").value.trim();
+  const btn = document.getElementById("lockTargetBtn");
+  btn.disabled = !(selected && situation.length > 0);
+}
+
+function renderRepsCard(today, readOnly) {
+  const shift = SHIFTS.find(s => s.num === today.target);
+  document.getElementById("targetLabel").textContent = shift ? `Today's target: #${shift.num} — ${shift.title}` : "";
+  document.getElementById("situationLabel").textContent = today.situation ? `Situation: ${today.situation}` : "";
+  document.getElementById("caughtCount").textContent = today.caught.length;
+  document.getElementById("slippedCount").textContent = today.slipped.length;
+
+  const caughtBtn = document.getElementById("caughtBtn");
+  const slippedBtn = document.getElementById("slippedBtn");
+  caughtBtn.disabled = readOnly;
+  slippedBtn.disabled = readOnly;
+  caughtBtn.style.opacity = readOnly ? 0.6 : 1;
+  slippedBtn.style.opacity = readOnly ? 0.6 : 1;
+
+  // Render rep list
+  const repList = document.getElementById("repList");
+  repList.innerHTML = "";
+  const combined = [
+    ...today.caught.map(r => ({ ...r, type: "caught" })),
+    ...today.slipped.map(r => ({ ...r, type: "slipped" }))
+  ].sort((a, b) => b.time.localeCompare(a.time));
+
+  if (combined.length === 0) {
+    repList.innerHTML = '<div class="empty">No reps logged yet today.</div>';
+    return;
+  }
+
+  combined.forEach(r => {
+    const div = document.createElement("div");
+    div.className = `rep-item ${r.type}`;
+    const time = new Date(r.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const label = r.type === "caught" ? "Caught" : "Slipped";
+    div.innerHTML = `
+      <div class="dot"></div>
+      <div class="content">
+        <div class="note">${r.note || `<em style="color:var(--muted)">No note</em>`}</div>
+        <div class="meta">${label} · ${time}</div>
+      </div>
+    `;
+    repList.appendChild(div);
+  });
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  const keys = Object.keys(state.days).sort().reverse();
+  if (keys.length === 0) {
+    list.innerHTML = '<div class="empty">No training days logged yet.</div>';
+    return;
+  }
+  list.innerHTML = "";
+  keys.forEach(k => {
+    const d = state.days[k];
+    const div = document.createElement("div");
+    div.className = "history-day";
+    const shift = SHIFTS.find(s => s.num === d.target);
+    const dateObj = new Date(k + "T00:00:00");
+    const dateStr = dateObj.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+    div.innerHTML = `
+      <div class="history-date">${dateStr} ${d.completed ? "✓" : ""}</div>
+      <div class="history-stats">
+        <span class="stat"><span class="dot caught"></span> ${d.caught.length} caught</span>
+        <span class="stat"><span class="dot slipped"></span> ${d.slipped.length} slipped</span>
+      </div>
+      ${shift ? `<div class="history-target">Target: #${shift.num} — ${shift.title}</div>` : '<div class="history-target" style="color:var(--muted)">No target set</div>'}
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ============================================================
+// HANDLERS
+// ============================================================
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById(`view-${tab.dataset.view}`).classList.add("active");
+  });
+});
+
+document.getElementById("lockTargetBtn").addEventListener("click", () => {
+  const selected = document.querySelector(".shift.active");
+  const situation = document.getElementById("situationInput").value.trim();
+  if (!selected || !situation) return;
+  const today = currentDay();
+  today.target = parseInt(selected.dataset.num, 10);
+  today.situation = situation;
+  saveState();
+  toast("Target locked. Log reps as the day unfolds.");
+  render();
+});
+
+document.getElementById("caughtBtn").addEventListener("click", () => {
+  pendingRep = { type: "caught" };
+  openRepNote();
+});
+
+document.getElementById("slippedBtn").addEventListener("click", () => {
+  pendingRep = { type: "slipped" };
+  openRepNote();
+});
+
+function openRepNote() {
+  document.getElementById("repNote").classList.add("show");
+  document.getElementById("repNoteInput").value = "";
+  document.getElementById("repNoteInput").focus();
+}
+
+function commitRep(note) {
+  if (!pendingRep) return;
+  const today = currentDay();
+  const entry = { time: new Date().toISOString(), note: note || "" };
+  if (pendingRep.type === "caught") today.caught.push(entry);
+  else today.slipped.push(entry);
+  saveState();
+  document.getElementById("repNote").classList.remove("show");
+  pendingRep = null;
+  toast(entry.note ? "Rep logged." : "Rep logged.");
+  render();
+}
+
+document.getElementById("saveRepNoteBtn").addEventListener("click", () => {
+  commitRep(document.getElementById("repNoteInput").value.trim());
+});
+document.getElementById("skipRepNoteBtn").addEventListener("click", () => {
+  commitRep("");
+});
+document.getElementById("repNoteInput").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") commitRep(document.getElementById("repNoteInput").value.trim());
+});
+
+document.getElementById("openReviewBtn").addEventListener("click", () => {
+  document.getElementById("openReviewCard").style.display = "none";
+  document.getElementById("eveningCard").style.display = "block";
+  document.getElementById("eveningCard").dataset.openedOnce = "true";
+});
+
+document.getElementById("saveReviewBtn").addEventListener("click", () => {
+  const today = currentDay();
+  today.review = {
+    lesson: document.getElementById("reviewQ1").value.trim(),
+    softened: document.getElementById("reviewQ2").value.trim(),
+    tomorrow: document.getElementById("reviewQ3").value.trim()
+  };
+  today.completed = true;
+  saveState();
+  toast("Day complete. Streak updated.");
+  render();
+});
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `grounded_warmth_${todayKey()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (confirm("Reset all data? This cannot be undone.")) {
+    localStorage.removeItem(STORAGE_KEY);
+    state = defaultState();
+    render();
+    toast("All data reset.");
+  }
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
